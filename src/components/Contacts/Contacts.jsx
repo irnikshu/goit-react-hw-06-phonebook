@@ -10,6 +10,7 @@ const ContactsList = ({ contact, deleteContact }) => {
           <button
             className={styles.deleteBtn}
             onClick={() => deleteContact(id)}
+            type="button"
           >
             Delete
           </button>
