@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Form from './Form/Form';
 import ContactsList from './Contacts/Contacts';
@@ -7,15 +6,22 @@ import Filter from './Filter/Filter';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addContact, deleteContact } from '../redux/actions';
+import { addContact, deleteContact } from '../redux/contacts/contact-slice';
+import { setFilter } from '../redux/filter/filter-slice';
+
+import {
+  getAllContacts,
+  getVisibleContact,
+} from '../redux/contacts/contacts-selectors';
+import { getFilter } from '../redux/filter/filter-selectors';
 
 import styles from './app.module.scss';
 import '../shared/Styles/styles.scss';
 
 const App = () => {
-  const contacts = useSelector(store => store.contacts);
-
-  const [filter, setFilter] = useState('');
+  const filteredContacts = useSelector(getVisibleContact);
+  const allContacts = useSelector(getAllContacts);
+  const filter = useSelector(getFilter);
 
   const dispatch = useDispatch();
 
@@ -30,12 +36,12 @@ const App = () => {
       number,
     };
     const checkName = newContact.name.toLowerCase();
-    if (contacts.find(contact => contact.name.toLowerCase() === checkName)) {
+    if (allContacts.find(contact => contact.name.toLowerCase() === checkName)) {
       alert(name + ' is already in contacts');
       return false;
     }
-    const action = addContact({ name, number });
-    dispatch(action);
+
+    dispatch(addContact({ name, number }));
     // contacts.find(contact => contact.name.toLowerCase() === checkName)
     //   ? alert(name + ' is already in contacts')
     // : setContacts(prevContacts => {
@@ -46,27 +52,14 @@ const App = () => {
   };
 
   const handleDeleteContact = contactId => {
-    const action = deleteContact(contactId);
-    dispatch(action);
+    dispatch(deleteContact(contactId));
   };
 
   const changeFilter = ({ target }) => {
-    setFilter(target.value);
+    dispatch(setFilter(target.value));
   };
 
-  const getVisibleContact = () => {
-    if (!filter) {
-      return contacts;
-    }
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-
-  const visibleContact = getVisibleContact();
-  const isBooks = Boolean(visibleContact.length);
+  const isBooks = Boolean(filteredContacts.length);
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.title}>Phonebook</h2>
@@ -75,8 +68,8 @@ const App = () => {
       <Filter value={filter} changeFilter={changeFilter} />
       {isBooks && (
         <ContactsList
-          contact={visibleContact}
-          removeContact={handleDeleteContact}
+          contact={filteredContacts}
+          deleteContact={handleDeleteContact}
         />
       )}
       {!isBooks && <p>No books in list</p>}
