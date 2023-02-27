@@ -25,9 +25,7 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   localStorage.setItem('my-contacts', JSON.stringify(contacts));
-  // }, [contacts]);
+ 
 
   const handleAddContact = ({ name, number }) => {
     const newContact = {
@@ -42,13 +40,7 @@ const App = () => {
     }
 
     dispatch(addContact({ name, number }));
-    // contacts.find(contact => contact.name.toLowerCase() === checkName)
-    //   ? alert(name + ' is already in contacts')
-    // : setContacts(prevContacts => {
-    //     return [newContact, ...prevContacts];
-    //   });
-    //   : const action = addContact({ name, number });
-    // dispatch(action)
+   
   };
 
   const handleDeleteContact = contactId => {
